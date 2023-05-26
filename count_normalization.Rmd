@@ -1,0 +1,62 @@
+---
+title: "pro"
+author: "lynn"
+date: "2023-05-16"
+output: html_document
+---
+```{r}
+count_table <- read.table(file = "/home/lynn/Desktop/internship/modelling/test/count.txt", sep="\t", header=TRUE, row.names = 1)
+W_reads <- count_table[,6:8]
+total_W_reads <- colSums(W_reads)
+Ec_reads <- count_table[,9:11]
+total_Ec_reads <- colSums(Ec_reads)
+E_reads <- count_table[,12:14]
+total_E_reads <- colSums(E_reads)
+E_C1_reads <- count_table[,15:17]
+total_E_C1_reads <- colSums(E_C1_reads)
+E_C2_reads <- count_table[,18:20]
+total_E_C2_reads <- colSums(E_C2_reads)
+```
+
+```{r}
+# Divide the number of reads for each sample by the total number of reads, multiply by 1,000,000 and round to 2 decimal places to get the number of reads per million
+W_reads_data <- round(W_reads / total_W_reads * 1000000, 2)
+Ec_reads_data <- round(Ec_reads / total_Ec_reads * 1000000, 2)
+E_reads_data <- round(E_reads / total_E_reads * 1000000, 2)
+E_C1_reads_data <- round(E_C1_reads / total_E_C1_reads * 1000000, 2)
+E_C2_reads_data <- round(E_C2_reads / total_E_C2_reads * 1000000, 2)
+```
+
+
+```{r}
+# Use the number of reads per million to normalize the data
+normalized_data_W <- log2(W_reads_data + 1)
+normalized_data_Ec <- log2(Ec_reads_data + 1)
+normalized_data_E <- log2(E_reads_data + 1)
+normalized_data_E_C1 <- log2(E_C1_reads_data + 1)
+normalized_data_E_C2 <- log2(E_C2_reads_data + 1)
+```
+
+```{r}
+normalized_data_W$Mean_W <- ave(normalized_data_W$S003952_6_W1.bam, normalized_data_W$S003953_7_W2.bam, normalized_data_W$S003954_8_W3.bam)
+normalized_data_Ec$Mean_Ec <- ave(normalized_data_Ec$S004039_1_Ec1.bam, normalized_data_Ec$S004040_2_Ec2.bam, normalized_data_Ec$S004041_3_Ec3.bam)
+normalized_data_E$Mean_E <- ave(normalized_data_E$S004051_13_E1.bam, normalized_data_E$S004052_14_E2.bam, normalized_data_E$S004053_15_E3.bam)
+normalized_data_E_C1$Mean_E_C1 <- ave(normalized_data_E_C1$S004334_4_E1_C21E9.bam, normalized_data_E_C1$S004335_5_E2_C21E9.bam, normalized_data_E_C1$S004336_6_E3_C21E9.bam)
+normalized_data_E_C2$Mean_E_C2 <- ave(normalized_data_E_C2$S004343_13_E1_C20E17.bam, normalized_data_E_C2$S004344_14_E2_C20E17.bam, normalized_data_E_C2$S004345_15_E3_C20E17.bam)
+```
+
+```{r}
+normalized_data_W_Mean <- subset(normalized_data_W, select = c(4))
+normalized_data_Ec_Mean <- subset(normalized_data_Ec, select = c(4))
+normalized_data_E_Mean <- subset(normalized_data_E, select = c(4))
+normalized_data_E_C1_Mean <- subset(normalized_data_E_C1, select = c(4))
+normalized_data_E_C2_Mean <- subset(normalized_data_E_C2, select = c(4))
+```
+
+```{r}
+write.csv(normalized_data_W_Mean ,"/home/lynn/Desktop/internship/modelling/test/normalized_counts_W.csv", sep = "\t")
+write.csv(normalized_data_Ec_Mean ,"/home/lynn/Desktop/internship/modelling/test/normalized_counts_Ec.csv", sep = "\t")
+write.csv(normalized_data_E_Mean ,"/home/lynn/Desktop/internship/modelling/test/normalized_counts_E.csv", sep = "\t")
+write.csv(normalized_data_E_C1_Mean ,"/home/lynn/Desktop/internship/modelling/test/normalized_counts_E_C1.csv", sep = "\t")
+write.csv(normalized_data_E_C2_Mean ,"/home/lynn/Desktop/internship/modelling/test/normalized_counts_E_C2.csv", sep = "\t")
+```
